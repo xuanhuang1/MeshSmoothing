@@ -19,7 +19,8 @@
 
 using namespace std;
 
-
+int readIn(vector<vertex> &v, vector<edge> &e, vector<face> &f, string filename);
+void smoothLapAng();
 
 struct Vertex{
     double x;

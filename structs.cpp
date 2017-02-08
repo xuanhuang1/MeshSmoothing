@@ -13,6 +13,7 @@ vertex::vertex(double a, double b, double c){
     y = b;
     z = c;
     onBound = 0;// 0 not onbound, 1 onbound
+    neighborSize = 0;
 }
 
 

@@ -14,7 +14,6 @@
 
 class face{
 public:
-    int numOfV;
     double aspectR, det;
     std::vector<int> listOfV;
     face(std::vector<int>);
@@ -27,7 +26,8 @@ public:
     double x,y,z;
     int onBound;
     vertex(double, double,double);
-    std::vector<face> neighbors;
+    std::vector<int> neighbors;
+    int neighborSize;
 };
 
 class edge{

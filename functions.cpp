@@ -8,9 +8,147 @@
 
 #include "functions.h"
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 #include <math.h>
+
+int readIn(vector<vertex> &v,vector<edge> &e,vector<face> &f, string filename){
+
+    ifstream inputFile(filename);
+    
+    if(!inputFile){
+        cout << "Cannot open file" << endl;
+        return 1;
+    }
+
+    
+    string str;
+    int line = 0;
+
+    while(getline(inputFile, str)){
+        int nofV, nofE, nofF;
+
+        // read the first line
+        if(line == 0){  
+            if(str != "OFF"){
+                cout << "Not An OFF File!" <<endl;
+                exit(0);
+            }
+        // read numbers of v f e
+        }else if(line == 1){   
+            stringstream ss(str);
+            ss >> nofV >> nofF >> nofE;
+        // read vertices
+        }else if(line < 1+nofV +1){   
+            double x,y,z;
+            stringstream ss(str);
+            ss >>x>>y >>z;
+            vertex temp = vertex(x,y,z);
+            v.push_back(vertex(x,y,z));
+        // read faces
+        }else if(line < 1+nofV+nofF +1){   
+            int numOfVerOnFace, thisVertexIndex;
+            std::vector<int> verticesIndexThisFace;
+            stringstream ss(str);
+            ss >> numOfVerOnFace;
+            // read edges
+            for(int i=0; i<numOfVerOnFace; i++){
+                ss >> thisVertexIndex;
+                verticesIndexThisFace.push_back(thisVertexIndex);
+                if(i >0){   
+                    edge eTemp(verticesIndexThisFace[i-1], verticesIndexThisFace[i]);
+                    for (int j =0; j<e.size(); j++) {
+                        if( (e[j].node1== verticesIndexThisFace[i-1]&&e[j].node2== verticesIndexThisFace[i])
+                            || (e[j].node2== verticesIndexThisFace[i-1]&&e[j].node1== verticesIndexThisFace[i]) ){
+                            e[j].edgeRep++;
+                            eTemp.edgeRep++;
+                        }
+                    }
+                    if(eTemp.edgeRep == 0)
+                        e.push_back(eTemp);
+                }
+            }
+            // add the tail with head - the last edge in list
+            edge eTemp(verticesIndexThisFace[numOfVerOnFace-1],verticesIndexThisFace[0]);
+            for (int j =0; j<e.size(); j++) {
+                if( (e[j].node1== verticesIndexThisFace[numOfVerOnFace-1]&&e[j].node2== verticesIndexThisFace[0]) 
+                    || (e[j].node2== verticesIndexThisFace[numOfVerOnFace-1]&&e[j].node1== verticesIndexThisFace[0])){
+                    e[j].edgeRep++;
+                    eTemp.edgeRep++;
+                }
+            }
+            if(eTemp.edgeRep == 0)
+                e.push_back(eTemp);
+
+            //for each vertex in face
+            for (int j =0; j<verticesIndexThisFace.size(); j++) {
+                // add everything else after than vertex, in circular manner
+                for(int p = 0; p<numOfVerOnFace-1; p++){
+                    v[verticesIndexThisFace[j]].neighbors.push_back(verticesIndexThisFace[(j+p+1)%numOfVerOnFace]);
+                }
+
+                v[verticesIndexThisFace[j]].neighborSize += 1;
+                //cout << "n size: " << v[verticesIndexThisFace[j]].neighborSize <<endl;
+                //check neighbor
+                /*cout << verticesIndexThisFace[j] << " :";
+                for(int p = 0; p<v[verticesIndexThisFace[j]].neighbors.size(); p++){
+                    cout << v[verticesIndexThisFace[j]].neighbors[p] << " ";
+                }
+                cout <<endl;*/
+            }
+            face tempF = face(verticesIndexThisFace);
+            
+            f.push_back(tempF);
+        }
+
+        line++;
+        
+    }
+
+    // mark the boundary vertices
+    for (int i=0; i<e.size(); i++) {
+        if (e[i].edgeRep == 0) {
+            v[e[i].node1].onBound = 1;
+            v[e[i].node2].onBound = 1;
+            cout << e[i].node1 << " " <<e[i].node2<<endl;
+        }
+    }
+
+
+    // clear out format of neighbor faces
+    for (int i=0; i<v.size(); i++) {
+        if(v[i].onBound == 0){
+            vector<int> neighborTemp;
+            int numofelements = v[i].neighbors.size()/v[i].neighborSize;
+            cout << "numofelements " << numofelements<<endl;
+            int j = numofelements;
+
+            for(int k = 0; k< numofelements; k++)
+                neighborTemp.push_back(v[i].neighbors[k]);
+
+            while (neighborTemp.size() < v[i].neighborSize*(numofelements -1)){
+                if(v[i].neighbors[j] == neighborTemp.back()){
+                    for(int k = 0; k< numofelements-1; k++)
+                        neighborTemp.push_back(v[i].neighbors[j+k+1]);
+                }
+                j += numofelements;
+                j = j%(v[i].neighbors.size());
+            }
+            v[i].neighbors = neighborTemp;
+
+            for(int p = 0; p<v[i].neighbors.size(); p++)   
+                cout << v[i].neighbors[p] <<" ";
+            cout << endl;
+        }
+    }
+
+
+
+
+
+    return 1;
+}
+
+
 
 
 
