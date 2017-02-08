@@ -109,7 +109,7 @@ int readIn(vector<vertex> &v,vector<edge> &e,vector<face> &f, string filename){
         if (e[i].edgeRep == 0) {
             v[e[i].node1].onBound = 1;
             v[e[i].node2].onBound = 1;
-            cout << e[i].node1 << " " <<e[i].node2<<endl;
+            //cout << e[i].node1 << " " <<e[i].node2<<endl;
         }
     }
 
@@ -119,7 +119,7 @@ int readIn(vector<vertex> &v,vector<edge> &e,vector<face> &f, string filename){
         if(v[i].onBound == 0){
             vector<int> neighborTemp;
             int numofelements = v[i].neighbors.size()/v[i].neighborSize;
-            cout << "numofelements " << numofelements<<endl;
+            //cout << "numofelements " << numofelements<<endl;
             int j = numofelements;
 
             for(int k = 0; k< numofelements; k++)
@@ -127,17 +127,19 @@ int readIn(vector<vertex> &v,vector<edge> &e,vector<face> &f, string filename){
 
             while (neighborTemp.size() < v[i].neighborSize*(numofelements -1)){
                 if(v[i].neighbors[j] == neighborTemp.back()){
-                    for(int k = 0; k< numofelements-1; k++)
-                        neighborTemp.push_back(v[i].neighbors[j+k+1]);
+                    for(int k = 0; k< numofelements-1; k++){
+                        if(v[i].neighbors[j+k+1] != neighborTemp[0])
+                            neighborTemp.push_back(v[i].neighbors[j+k+1]);
+                    }
                 }
                 j += numofelements;
                 j = j%(v[i].neighbors.size());
             }
             v[i].neighbors = neighborTemp;
 
-            for(int p = 0; p<v[i].neighbors.size(); p++)   
-                cout << v[i].neighbors[p] <<" ";
-            cout << endl;
+            //for(int p = 0; p<v[i].neighbors.size(); p++)   
+                //cout << v[i].neighbors[p] <<" ";
+            //cout << endl;
         }
     }
 
@@ -149,10 +151,119 @@ int readIn(vector<vertex> &v,vector<edge> &e,vector<face> &f, string filename){
 }
 
 
+void maxminAng(vector<vertex> &v, vector<face> &f, double &max, double &min){
+    double angleTemp = 20.123456;
+    double vec1x, vec1y, vec2x, vec2y;
+    for (int i=0; i<f.size(); ++i) { // for each face
+        for (int j=0; j<f[i].listOfV.size(); ++j) { // for each vertex in this face, there is an angle
+            int last, self, next;
+            self = f[i].listOfV[j];
+            if (j == 0) {
+                last = f[i].listOfV[f[i].listOfV.size()-1];
+                next = f[i].listOfV[j+1];
+            }else if(j==f[i].listOfV.size()-1){
+                last = f[i].listOfV[j-1];
+                next = f[i].listOfV[0];
+            }else{
+                last = f[i].listOfV[j-1];
+                next = f[i].listOfV[j+1];
+            }
+            vec1x = v[last].x - v[self].x;
+            vec1y = v[last].y - v[self].y;
+            vec2x = v[next].x - v[self].x;
+            vec2y = v[next].y - v[self].y;
+            
+            angleTemp = acos((vec2x*vec1x + vec2y*vec1y)
+                             /(sqrt(pow(vec1x,2)+pow(vec1y,2))
+                               *sqrt(pow(vec2x,2)+pow(vec2y,2)) )  );
+            
+            //for test angle
+            /*cout << "vec2x*vec1x + vec2y*vec1y: " << vec2x*vec1x + vec2y*vec1y << endl;
+             cout << "sqrt(pow(vec1x,2)+pow(vec1y,2))*sqrt(pow(vec2x,2)+pow(vec2y,2)): " << sqrt(pow(vec1x,2)+pow(vec1y,2))*sqrt(pow(vec2x,2)+pow(vec2y,2)) << endl;
+             cout << "angleTemp: " << angleTemp << endl;*/
+            
+            
+            if (i==0) {
+                max = angleTemp;
+                min = angleTemp;
+            }else{
+                if (angleTemp > max) {
+                    max = angleTemp;
+                }
+                if (angleTemp < min){
+                    min = angleTemp;
+                }
+            }
+        }// end of this angle
+    }//end of this face
+    
+}
+double sortByAR(face &f1, face &f2){
+    return f1.aspectR > f2.aspectR;
+}
 
+double aspectR(vector<vertex> v, vector<face> &f, double &med){
+    double tempAR, finalAR;
+    finalAR = 0;
+    double resultVal;
 
-
-
+    Vertex face[4];
+    
+    for (int i=0; i<f.size(); ++i) { // for each face
+        double min, max, vecx, vecy;
+        double thisEdge;
+        
+        for (int j = 0; j < f[i].listOfV.size(); j++) { //jacob and modified det calculate
+            face[j].x = v[f[i].listOfV[j]].x;
+            face[j].y = v[f[i].listOfV[j]].y;
+            face[j].z = v[f[i].listOfV[j]].z;
+            //cout << "j " << j<<endl;
+        }
+        //cout << analyze(face).jacobianDet <<endl;
+        //f[i].setDet(analyze(face).jacobianDet);
+        
+        //worstModDet = analysis.modifiedDet;
+        
+        
+        for (int j=0; j<f[i].listOfV.size(); ++j) { // for each vertex in this face, measure the edge it connects with the next vertex
+            int self, next;
+            self = f[i].listOfV[j];
+            next = f[i].listOfV[(j+1)%f[i].listOfV.size()];
+            
+            vecx = v[next].x - v[self].x;
+            vecy = v[next].y - v[self].y;
+            
+            thisEdge = sqrt(pow(vecx,2)+pow(vecy,2));
+            
+            if(j==0){
+                max = thisEdge;
+                min = thisEdge;
+            }else{
+                if (thisEdge>max) {
+                    max = thisEdge;
+                }
+                if (thisEdge<min) {
+                    min = thisEdge;
+                }
+            }
+        }// end of all edges in the face
+        tempAR = max/min;
+        //cout << "tempAR "<<tempAR<<endl;
+        
+        //set aspect ratio in each face
+        f[i].aspectR = tempAR;
+        
+        if(finalAR < tempAR){
+            finalAR = tempAR;
+        }
+    }//end of all faces
+    
+    //sort(f.begin(), f.end(), sortByAR);    // !!!!! change here for sorting type!!!!
+    
+    med = f[2*f.size()/3].aspectR;
+    
+    return finalAR;
+}
 
 
 CREAnalysis analyze(Vertex vertices[4]) {

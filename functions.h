@@ -20,7 +20,9 @@
 using namespace std;
 
 int readIn(vector<vertex> &v, vector<edge> &e, vector<face> &f, string filename);
-void smoothLapAng();
+int smoothLapAng(vector<vertex> &v,vector<face> &f);
+void maxminAng(vector<vertex> &v, vector<face> &f, double &max, double &min);
+double aspectR(vector<vertex> v, vector<face> &f, double &med);
 
 struct Vertex{
     double x;
