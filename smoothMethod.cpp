@@ -54,3 +54,150 @@ int smoothLapAng(vector<vertex> &v, vector<face> &f){
 
 	return 1;
 }
+
+
+void smooth1(std::vector<vertex> &v, std::vector<face> &f, double ar){
+	//for each face
+	for(int k=0; k<f.size(); k++){
+	// for each vertex to be smoothed in the face
+		double min,max,vecx,vecy;
+		double thisEdge, tempAR;
+		int self, next, lastIndex, ver1, ver2;
+        double centerX, centerY;
+
+
+        //for triangle only!!!
+        centerX = GetCircumCenterX(v[f[k].listOfV[0]].x, v[f[k].listOfV[0]].y,
+        						   v[f[k].listOfV[1]].x, v[f[k].listOfV[1]].y,
+        						   v[f[k].listOfV[2]].x, v[f[k].listOfV[2]].y);
+        centerY = GetCircumCenterY(v[f[k].listOfV[0]].x, v[f[k].listOfV[0]].y,
+        						   v[f[k].listOfV[1]].x, v[f[k].listOfV[1]].y,
+        						   v[f[k].listOfV[2]].x, v[f[k].listOfV[2]].y);
+        //
+
+		for(int i=0; i<f[k].listOfV.size(); i++){ 
+			self = f[k].listOfV[i];
+			next = f[k].listOfV[(i+1)%f[k].listOfV.size()];
+			//lastIndex = f[k].listOfV[(f[k].listOfV.size()+i-1)%f[k].listOfV.size()];
+
+			//cout << selfIndex <<" "<< nextIndex <<" "<<lastIndex<<endl;
+
+			vecx = v[next].x - v[self].x;	
+			vecy = v[next].y - v[self].y;	
+
+			thisEdge = sqrt(pow(vecx,2)+ pow(vecy,2));
+
+			if(i==0){
+				max = thisEdge;
+				min = thisEdge;
+				ver1 = self;
+				ver2 = next;
+				lastIndex = f[k].listOfV[(f[k].listOfV.size()+i-1)%f[k].listOfV.size()];
+			}else{
+				if(thisEdge>max){
+					max = thisEdge;
+				}
+				if(thisEdge<min){
+					max = thisEdge;
+					ver1 = self;
+					ver2 = next;
+					lastIndex = f[k].listOfV[(f[k].listOfV.size()+i-1)%f[k].listOfV.size()];
+				}
+			}
+			
+		}
+	
+
+		tempAR = max/min;
+
+		if(tempAR > ar){
+			if(v[ver1].onBound == 0){
+				double angle = -0.01;
+				double currentDist = min;
+
+				while(currentDist < min+0.01*max){
+						v[ver1].x = movePX(v[ver1].x, v[ver1].y, centerX, centerY, angle);
+						v[ver1].y = movePY(v[ver1].x, v[ver1].y, centerX, centerY, angle);
+						currentDist = sqrt(pow(v[ver1].x-v[ver2].x, 2) + pow(v[ver1].y-v[ver2].y, 2));
+				}
+
+				min = currentDist;
+			}
+
+			if(v[ver2].onBound == 0){
+				double angle = 0.01;
+				double currentDist = min;
+
+				while(currentDist < min+0.01*max){
+						v[ver2].x = movePX(v[ver2].x, v[ver2].y, centerX, centerY, angle);
+						v[ver2].y = movePY(v[ver2].x, v[ver2].y, centerX, centerY, angle);
+						currentDist = sqrt(pow(v[ver1].x-v[ver2].x, 2) + pow(v[ver1].y-v[ver2].y, 2));
+
+				}
+			}
+
+
+
+		}
+	}
+
+}
+
+
+
+
+
+double GetCircumCenterX(double Ax, double Ay, double Bx, double By, double Cx, double Cy)
+{
+    double BCx, BCy, ABx, ABy, k1, k2;
+     
+    BCx = ((Bx + Cx)/2.0);
+    BCy = ((By + Cy)/2.0);
+    ABx = ((Bx + Ax)/2.0);
+    ABy = ((By + Ay)/2.0);
+    k1 = (- Bx + Ax)/(By - Ay);
+    k2 = (- Cx + Bx)/(Cy - By);
+     
+    if(By == Ay)
+        return ABx;
+    if(Cy == By)
+        return BCx;
+     
+    return (((ABy - k1*ABx) - (BCy - k2 * BCx)) / (k2 - k1));
+     
+}
+ 
+double GetCircumCenterY(double Ax, double Ay, double Bx, double By, double Cx, double Cy)
+{
+    double BCx, BCy, ABx, ABy, k1, k2, CircumCenterX;
+     
+    BCx = ((Bx + Cx)/2.0);
+    BCy = ((By + Cy)/2.0);
+    ABx = ((Bx + Ax)/2.0);
+    ABy = ((By + Ay)/2.0);
+    k1 = (- Bx + Ax)/(By - Ay);
+    k2 = (- Cx + Bx)/(Cy - By);
+    CircumCenterX = GetCircumCenterX(Ax, Ay, Bx, By, Cx, Cy);
+     
+    if(By == Ay)
+        return k2*ABx + BCy - k2*BCx;
+    if(By == Cy)
+        return k1*BCx + ABy - k1*ABx;
+
+    return (k1 * (CircumCenterX - ABx) + ABy);
+     
+}
+ 
+double movePX(double Ax, double Ay, double cenX, double cenY, double ang){
+    return cenX + (Ax - cenX)*cos(ang) - (Ay - cenY)*sin(ang);
+}
+ 
+double movePY(double Ax, double Ay, double cenX, double cenY, double ang){
+    return cenY + (Ax - cenX)*sin(ang) + (Ay - cenY)*cos(ang);
+}
+
+
+
+
+
+

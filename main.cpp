@@ -33,21 +33,19 @@ int main(int argc, char* argv[]){
     aspectratio = aspectR(v, f, med);
 
     cout << "\noriginal :" <<endl;
-    cout << "max: " << maxAngle*180/(2*PI) << " min: " << minAngle*180/(2*PI)<<endl;
+    cout << "max: " << maxAngle*180/PI << " min: " << minAngle*180/PI<<endl;
     cout << "aspectR: " << aspectratio<<endl;
     
-
-
-    int a =5;
+    int a =60;
     while(a >0){
-        smoothLapAng(v, f);
+        smooth1(v, f, aspectratio/2);
         a--;
     }
 
     cout << "\nafter smooth : "<<endl;
     aspectratio = aspectR(v, f, med);
     maxminAng(v, f, maxAngle, minAngle);
-    cout << "max: " << maxAngle*180/(2*PI) << " min: " << minAngle*180/(2*PI)<<endl;
+    cout << "max: " << maxAngle*180/PI << " min: " << minAngle*180/PI<<endl;
     cout << "aspectR: " << aspectratio<<endl;
     /*
     for (int i=0; i<v.size(); i++) {

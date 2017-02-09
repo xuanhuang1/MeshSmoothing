@@ -173,14 +173,14 @@ void maxminAng(vector<vertex> &v, vector<face> &f, double &max, double &min){
             vec2x = v[next].x - v[self].x;
             vec2y = v[next].y - v[self].y;
             
-            angleTemp = acos((vec2x*vec1x + vec2y*vec1y)
+            angleTemp = acos((vec1x*vec2x + vec1y*vec2y)
                              /(sqrt(pow(vec1x,2)+pow(vec1y,2))
                                *sqrt(pow(vec2x,2)+pow(vec2y,2)) )  );
             
             //for test angle
             /*cout << "vec2x*vec1x + vec2y*vec1y: " << vec2x*vec1x + vec2y*vec1y << endl;
              cout << "sqrt(pow(vec1x,2)+pow(vec1y,2))*sqrt(pow(vec2x,2)+pow(vec2y,2)): " << sqrt(pow(vec1x,2)+pow(vec1y,2))*sqrt(pow(vec2x,2)+pow(vec2y,2)) << endl;
-             cout << "angleTemp: " << angleTemp << endl;*/
+            */ 
             
             
             if (i==0) {
@@ -190,11 +190,12 @@ void maxminAng(vector<vertex> &v, vector<face> &f, double &max, double &min){
                 if (angleTemp > max) {
                     max = angleTemp;
                 }
-                if (angleTemp < min){
+                else if (angleTemp < min){
                     min = angleTemp;
                 }
             }
         }// end of this angle
+        f[i].minAng = min;
     }//end of this face
     
 }
@@ -202,7 +203,7 @@ double sortByAR(face &f1, face &f2){
     return f1.aspectR > f2.aspectR;
 }
 
-double aspectR(vector<vertex> v, vector<face> &f, double &med){
+double aspectR(vector<vertex> &v, vector<face> &f, double &med){
     double tempAR, finalAR;
     finalAR = 0;
     double resultVal;
@@ -258,7 +259,7 @@ double aspectR(vector<vertex> v, vector<face> &f, double &med){
         }
     }//end of all faces
     
-    //sort(f.begin(), f.end(), sortByAR);    // !!!!! change here for sorting type!!!!
+    sort(f.begin(), f.end(), sortByAR);    // !!!!! change here for sorting type!!!!
     
     med = f[2*f.size()/3].aspectR;
     

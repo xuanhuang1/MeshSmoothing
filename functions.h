@@ -21,8 +21,19 @@ using namespace std;
 
 int readIn(vector<vertex> &v, vector<edge> &e, vector<face> &f, string filename);
 int smoothLapAng(vector<vertex> &v,vector<face> &f);
+void smooth1(std::vector<vertex> &v, std::vector<face> &f, double ar);
+
+
+
 void maxminAng(vector<vertex> &v, vector<face> &f, double &max, double &min);
-double aspectR(vector<vertex> v, vector<face> &f, double &med);
+double aspectR(vector<vertex> &v, vector<face> &f, double &med);
+double GetCircumCenterX(double Ax, double Ay, double Bx, double By, double Cx, double Cy);
+double GetCircumCenterY(double Ax, double Ay, double Bx, double By, double Cx, double Cy);
+
+double movePX(double Ax, double Ay, double cenX, double cenY, double ang);
+double movePY(double Ax, double Ay, double cenX, double cenY, double ang);
+
+
 
 struct Vertex{
     double x;

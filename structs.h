@@ -14,7 +14,7 @@
 
 class face{
 public:
-    double aspectR, det;
+    double aspectR, det, minAng;
     std::vector<int> listOfV;
     face(std::vector<int>);
     int hasV(int);
