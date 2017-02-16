@@ -59,7 +59,7 @@ int smoothLapAng(vector<vertex> &v, vector<face> &f){
 void smooth1(std::vector<vertex> &v, std::vector<face> &f, double ar){
 	//for each face
 	for(int k=0; k<f.size(); k++){
-	// for each vertex to be smoothed in the face
+	
 		double min,max,vecx,vecy;
 		double thisEdge, tempAR;
 		int self, next, lastIndex, ver1, ver2;
@@ -74,7 +74,7 @@ void smooth1(std::vector<vertex> &v, std::vector<face> &f, double ar){
         						   v[f[k].listOfV[1]].x, v[f[k].listOfV[1]].y,
         						   v[f[k].listOfV[2]].x, v[f[k].listOfV[2]].y);
         //
-
+        // 
 		for(int i=0; i<f[k].listOfV.size(); i++){ 
 			self = f[k].listOfV[i];
 			next = f[k].listOfV[(i+1)%f[k].listOfV.size()];
@@ -98,7 +98,7 @@ void smooth1(std::vector<vertex> &v, std::vector<face> &f, double ar){
 					max = thisEdge;
 				}
 				if(thisEdge<min){
-					max = thisEdge;
+					min = thisEdge;
 					ver1 = self;
 					ver2 = next;
 					lastIndex = f[k].listOfV[(f[k].listOfV.size()+i-1)%f[k].listOfV.size()];
@@ -112,6 +112,7 @@ void smooth1(std::vector<vertex> &v, std::vector<face> &f, double ar){
 
 		if(tempAR > ar){
 			if(v[ver1].onBound == 0){
+                //cout << ver1 << " "<<endl;
 				double angle = -0.01;
 				double currentDist = min;
 
@@ -134,11 +135,14 @@ void smooth1(std::vector<vertex> &v, std::vector<face> &f, double ar){
 						currentDist = sqrt(pow(v[ver1].x-v[ver2].x, 2) + pow(v[ver1].y-v[ver2].y, 2));
 
 				}
+                //cout << ver2 << " "<<endl;
 			}
 
 
 
-		}
+		//}else{
+        //    cout << "tar " << tempAR <<endl;
+        }
 	}
 
 }

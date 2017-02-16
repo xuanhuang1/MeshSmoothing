@@ -1,0 +1,5 @@
+generate points with a 4 points boundary box
+num of points and precision determined in functions.h
+
+./test <outputfile>
+

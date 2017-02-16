@@ -104,6 +104,8 @@ int readIn(vector<vertex> &v,vector<edge> &e,vector<face> &f, string filename){
         
     }
 
+    cout << "endofwhileread" <<endl;
+
     // mark the boundary vertices
     for (int i=0; i<e.size(); i++) {
         if (e[i].edgeRep == 0) {
@@ -113,13 +115,16 @@ int readIn(vector<vertex> &v,vector<edge> &e,vector<face> &f, string filename){
         }
     }
 
+    cout << "endofboundary check" <<endl;
 
     // clear out format of neighbor faces
     for (int i=0; i<v.size(); i++) {
         if(v[i].onBound == 0){
             vector<int> neighborTemp;
+            //cout << "v[i].neighborSize" << v[i].neighborSize<<endl;
+            if(v[i].neighborSize == 0)
+                cout << i<<endl;
             int numofelements = v[i].neighbors.size()/v[i].neighborSize;
-            //cout << "numofelements " << numofelements<<endl;
             int j = numofelements;
 
             for(int k = 0; k< numofelements; k++)
@@ -139,11 +144,11 @@ int readIn(vector<vertex> &v,vector<edge> &e,vector<face> &f, string filename){
 
             //for(int p = 0; p<v[i].neighbors.size(); p++)   
                 //cout << v[i].neighbors[p] <<" ";
-            //cout << endl;
+            //cout <<"endiput"<< endl;
         }
     }
 
-
+    cout <<"endiput"<< endl;
 
 
 
