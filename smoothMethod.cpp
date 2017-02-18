@@ -135,6 +135,7 @@ void smooth1(std::vector<vertex> &v, std::vector<face> &f, double ar){
 						currentDist = sqrt(pow(v[ver1].x-v[ver2].x, 2) + pow(v[ver1].y-v[ver2].y, 2));
 
 				}
+
                 //cout << ver2 << " "<<endl;
 			}
 
@@ -147,6 +148,115 @@ void smooth1(std::vector<vertex> &v, std::vector<face> &f, double ar){
 
 }
 
+void smooth1Star(std::vector<vertex> &v, std::vector<face> &f, double ar){
+    for (int i=0; i<v.size(); i++) {// for each vertex in mesh
+        double xnew = 0;
+        double ynew = 0;
+        vertex nextV(0,0,0), thisV(0,0,0);
+
+        if(v[i].onBound == 0){  
+            for(int j= 0; j<v[i].neighborSize; j++){ // for each vertex in neihgbor face
+                // get the next vertex and forms a triangle with v[i]
+                thisV = v[v[i].neighbors[j]];
+                nextV = v[v[i].neighbors[(j+1)%v[i].neighborSize]];
+
+                double min,max,vecx,vecy;
+                double thisEdge, tempAR;
+                int self, next, lastIndex, ver1, ver2;
+                double centerX, centerY;
+
+
+                //for triangle only!!!
+                centerX = GetCircumCenterX(thisV.x, thisV.y,nextV.x, nextV.y,v[i].x, v[i].y);
+                centerY = GetCircumCenterY(thisV.x, thisV.y,nextV.x, nextV.y,v[i].x, v[i].y);
+
+                std::vector<int> tempInts;
+                tempInts.push_back(i);
+                tempInts.push_back(v[i].neighbors[j]);
+                tempInts.push_back(v[i].neighbors[(j+1)%v[i].neighborSize]);
+
+                // in that triangle
+                face aFaceInStar = face(tempInts);
+                for(int k=0; k<aFaceInStar.listOfV.size(); k++){ 
+                    self = aFaceInStar.listOfV[k];
+                    next = aFaceInStar.listOfV[(k+1)%aFaceInStar.listOfV.size()];
+                    //cout << self <<" "<< next <<" "<< endl;
+
+                    vecx = v[next].x - v[self].x;   
+                    vecy = v[next].y - v[self].y;   
+                    thisEdge = sqrt(pow(vecx,2)+ pow(vecy,2));
+
+                    // find max and min edge
+                    if(k==0){
+                        max = thisEdge;
+                        min = thisEdge;
+                        ver1 = self;
+                        ver2 = next;
+                        lastIndex = aFaceInStar.listOfV[(aFaceInStar.listOfV.size()+k-1)%aFaceInStar.listOfV.size()];
+                    }else{
+                        if(thisEdge>max){
+                            max = thisEdge;
+                        }
+                        if(thisEdge<min){
+                            min = thisEdge;
+                            ver1 = self;
+                            ver2 = next;
+                            lastIndex = aFaceInStar.listOfV[(aFaceInStar.listOfV.size()+k-1)%aFaceInStar.listOfV.size()];
+                        }
+                    }
+                }
+
+                double xTobeMove = v[i].x, yTobeMove = v[i].y;
+                tempAR = max/min;
+
+                if(tempAR > ar){
+                   if(ver1 == i){
+                        //cout << ver1 << " "<<endl;
+                        double angle = -0.01;
+                        double currentDist = min;
+                        xTobeMove = v[ver1].x;
+                        yTobeMove = v[ver1].y;
+
+                        while(currentDist < min+0.01*max){
+                            xTobeMove = movePX(xTobeMove, yTobeMove, centerX, centerY, angle);
+                            yTobeMove = movePY(xTobeMove, yTobeMove, centerX, centerY, angle);
+                            currentDist = sqrt(pow(xTobeMove-v[ver2].x, 2) + pow(yTobeMove-v[ver2].y, 2));
+                        }
+
+                        min = currentDist;
+                    }
+
+                    else if(ver2 == i){
+                        double angle = 0.01;
+                        double currentDist = min;
+                        xTobeMove = v[ver2].x;
+                        yTobeMove = v[ver2].y;
+
+                        while(currentDist < min+0.01*max){
+                            xTobeMove = movePX(xTobeMove, yTobeMove, centerX, centerY, angle);
+                            yTobeMove = movePY(xTobeMove, yTobeMove, centerX, centerY, angle);
+                            currentDist = sqrt(pow(v[ver1].x-xTobeMove, 2) + pow(v[ver1].y-yTobeMove, 2));
+
+                        }
+                    //cout << ver2 << " "<<endl;
+                    }
+
+                }
+
+                xnew += xTobeMove;
+                ynew += yTobeMove;
+
+
+            }
+
+            v[i].x = xnew/v[i].neighborSize;
+            v[i].y = ynew/v[i].neighborSize;
+
+        }
+    }
+
+
+}
 
 
 

@@ -50,7 +50,7 @@ void fourVerticesOnEdge(char* afilename){
     outputfile << TOTALVERTICES<<" "<< "2 0 0"<< endl;
     
     for (int i =0; i<TOTALVERTICES; i++){
-        outputfile << i+1  << " "<< 100*generatedList[2*i] << " " << 100*generatedList[2*i+1] <<endl;
+        outputfile << i+1  << " "<< 10*generatedList[2*i] << " " << 10*generatedList[2*i+1] <<endl;
     }
     
     outputfile <<"4 0"<< endl;

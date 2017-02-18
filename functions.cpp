@@ -87,7 +87,7 @@ int readIn(vector<vertex> &v,vector<edge> &e,vector<face> &f, string filename){
                 }
 
                 v[verticesIndexThisFace[j]].neighborSize += 1;
-                //cout << "n size: " << v[verticesIndexThisFace[j]].neighborSize <<endl;
+                //cout <<verticesIndexThisFace[j] << " size: " << v[verticesIndexThisFace[j]].neighborSize <<endl;
                 //check neighbor
                 /*cout << verticesIndexThisFace[j] << " :";
                 for(int p = 0; p<v[verticesIndexThisFace[j]].neighbors.size(); p++){

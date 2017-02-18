@@ -36,9 +36,9 @@ int main(int argc, char* argv[]){
     cout << "max: " << maxAngle*180/PI << " min: " << minAngle*180/PI<<endl;
     cout << "aspectR: " << aspectratio<<endl;
     
-    int a =20;
+    int a =50;
     while(a >0){
-        smooth1(v, f, aspectratio/3);
+        smooth1Star(v, f, aspectratio/5);
         a--;
     }
 

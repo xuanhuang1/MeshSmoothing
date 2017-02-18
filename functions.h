@@ -22,6 +22,7 @@ using namespace std;
 int readIn(vector<vertex> &v, vector<edge> &e, vector<face> &f, string filename);
 int smoothLapAng(vector<vertex> &v,vector<face> &f);
 void smooth1(std::vector<vertex> &v, std::vector<face> &f, double ar);
+void smooth1Star(std::vector<vertex> &v, std::vector<face> &f, double ar);
 
 
 
