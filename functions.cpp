@@ -187,8 +187,7 @@ void maxminAng(vector<vertex> &v, vector<face> &f, double &max, double &min){
              cout << "sqrt(pow(vec1x,2)+pow(vec1y,2))*sqrt(pow(vec2x,2)+pow(vec2y,2)): " << sqrt(pow(vec1x,2)+pow(vec1y,2))*sqrt(pow(vec2x,2)+pow(vec2y,2)) << endl;
             */ 
             
-            
-            if (i==0) {
+            if (i==0 && j==0) {
                 max = angleTemp;
                 min = angleTemp;
             }else{
