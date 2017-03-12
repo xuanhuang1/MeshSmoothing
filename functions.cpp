@@ -270,6 +270,34 @@ double aspectR(vector<vertex> &v, vector<face> &f, double &med){
     return finalAR;
 }
 
+double lineDistPoint(double x1, double y1, double x2, double y2,double px, double py){
+    double vxLine = x2 - x1;
+    double vyLine = y2 - y1;
+    double vxPointToEnd = px - x1;
+    double vyPointToEnd = py - y1;
+
+    double dis = abs(vxLine * vyPointToEnd - vyLine * vxPointToEnd) / sqrt(vxLine * vxLine + vyLine * vyLine);
+    return dis;
+
+}
+
+double findShortestDistInStar(vector<vertex> &v, vector<face> &f, double theX, double theY, std::vector<int> nbrs){
+    double distFinal, distTemp = 0;
+    for (int i = 0; i < nbrs.size(); ++i)
+    {
+        vertex a = v[nbrs[(i)%nbrs.size()]];
+        vertex b = v[nbrs[(i+1)%nbrs.size()]];
+
+        distTemp =  lineDistPoint(a.x, a.y, b.x, b.y, theX, theY);
+
+        if(i == 0)
+            distFinal = distTemp;
+        if(distFinal > distTemp)
+            distFinal = distTemp;
+    }
+
+    return distFinal;
+}
 
 CREAnalysis analyze(Vertex vertices[4]) {
     

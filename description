@@ -1,0 +1,12 @@
+
+star1: 
+for each star region
+for each neighborhood face
+check if the center point is on the shortest edge, if true move accordingly (on circumcircle)
+take average
+
+star2:
+for each star region
+for each neighborhood face
+compare the two edges it connects, move to decrease the difference (on circumcircle)
+take average

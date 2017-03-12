@@ -44,7 +44,7 @@ int main(int argc, char* argv[]){
     cout << "max: " << maxAngle*180/PI << " min: " << minAngle*180/PI<<endl;
     cout << "aspectR: " << aspectratio<<endl;
     
-    int a =20;
+    int a =500;
     while(a >0 ){
         if(!runFlag.compare("-Lap")){
             smoothLapAng(v, f);
@@ -90,6 +90,10 @@ int main(int argc, char* argv[]){
         outputfile <<"\n";
     }
     outputfile.close();
+
+
+    //double s = lineDistPoint(1, 1, 2, 2, 3, 4);
+    //cout << s <<endl;
     
     return 0;
     

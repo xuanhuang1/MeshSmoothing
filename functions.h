@@ -34,7 +34,8 @@ double GetCircumCenterY(double Ax, double Ay, double Bx, double By, double Cx, d
 
 double movePX(double Ax, double Ay, double cenX, double cenY, double ang);
 double movePY(double Ax, double Ay, double cenX, double cenY, double ang);
-
+double lineDistPoint(double x1, double y1, double x2, double y2,double px, double py);
+double findShortestDistInStar(vector<vertex> &v, vector<face> &f, double, double, std::vector<int> nbrs);
 
 
 struct Vertex{

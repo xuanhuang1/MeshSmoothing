@@ -157,6 +157,12 @@ void smooth1(std::vector<vertex> &v, std::vector<face> &f, double ar){
 
 }
 
+
+//  for each star region
+//  for each neighborhood face
+//  check if the center point is on the shortest edge, if true move accordingly (on circumcircle)
+//  take average
+
 void smooth1Star(std::vector<vertex> &v, std::vector<face> &f, double ar){
     for (int i=0; i<v.size(); i++) {// for each vertex in mesh
         double xnew = 0;
@@ -225,6 +231,7 @@ void smooth1Star(std::vector<vertex> &v, std::vector<face> &f, double ar){
                 double xTobeMove = v[i].x, yTobeMove = v[i].y;
                 tempAR = max/min;
 
+
                 if(minAng < 20*PI/180){
 
                     //cout << "min " <<minAng*PI/180 <<endl;
@@ -259,6 +266,17 @@ void smooth1Star(std::vector<vertex> &v, std::vector<face> &f, double ar){
                     //cout << ver2 << " "<<endl;
                     }
 
+                    double ordis = findShortestDistInStar(v, f, v[i].x, v[i].y, v[i].neighbors);
+                    //cout << "v[" << i<<"] neighbors shortest dis orig: " << ordis <<endl;
+                    double dis = findShortestDistInStar(v, f, xTobeMove, yTobeMove, v[i].neighbors);
+                    //cout << "v[" << i<<"] neighbors shortest dis now: " << dis <<endl;
+                    if(dis < ordis){
+                        xTobeMove = v[i].x;
+                        yTobeMove = v[i].y;
+                        //cout << "Closer! Not Moving!" <<endl;
+                    }
+
+
                 }
 
                 xnew += xTobeMove;
@@ -276,6 +294,12 @@ void smooth1Star(std::vector<vertex> &v, std::vector<face> &f, double ar){
 
 }
 
+
+//  for each star region
+//  for each neighborhood face
+//  compare the two edges it connects, move to decrease the difference (on circumcircle)
+//  take average
+
 void smooth2Star(std::vector<vertex> &v, std::vector<face> &f, double ar){
     for (int i=0; i<v.size(); i++) {// for each vertex in mesh
         double xnew = 0;
@@ -289,7 +313,7 @@ void smooth2Star(std::vector<vertex> &v, std::vector<face> &f, double ar){
                 nextV = v[v[i].neighbors[(j+1)%v[i].neighborSize]];
 
 
-                double max, min,vecx,vecy, angle = 0.01;
+                double vecx,vecy, angle = 0.01;
                 double lastEdge, nextEdge,thisEdge, tempAR, minAng, thisAng;
                 int self, next, ver2;
                 double centerX, centerY;
@@ -325,8 +349,6 @@ void smooth2Star(std::vector<vertex> &v, std::vector<face> &f, double ar){
                     // find max and min edge
                     if(k==0){
                         minAng = thisAng;
-                        max = thisEdge;
-                        min = thisEdge;
                         lastEdge = sqrt(pow(vecx,2)+ pow(vecy,2));
                         nextEdge = sqrt(pow(vec1x,2)+ pow(vec1y,2));
 
@@ -341,11 +363,6 @@ void smooth2Star(std::vector<vertex> &v, std::vector<face> &f, double ar){
                     }else{
                         if(thisAng < minAng)
                             minAng = thisAng;
-                        if(thisEdge>max)
-                            max = thisEdge;
-                
-                        if(thisEdge<min)
-                            min = thisEdge;
                     }
                 }
 
