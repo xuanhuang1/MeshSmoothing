@@ -204,6 +204,10 @@ void maxminAng(vector<vertex> &v, vector<face> &f, double &max, double &min){
     
 }
 double sortByAR(face &f1, face &f2){
+    return f1.minAng > f2.minAng;
+}
+
+double sortByMinAng(face &f1, face &f2){
     return f1.aspectR > f2.aspectR;
 }
 
@@ -263,7 +267,7 @@ double aspectR(vector<vertex> &v, vector<face> &f, double &med){
         }
     }//end of all faces
     
-    sort(f.begin(), f.end(), sortByAR);    // !!!!! change here for sorting type!!!!
+    sort(f.begin(), f.end(), sortByMinAng);    // !!!!! change here for sorting type!!!!
     
     med = f[2*f.size()/3].aspectR;
     
