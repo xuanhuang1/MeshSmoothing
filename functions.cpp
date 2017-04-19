@@ -261,9 +261,17 @@ double aspectR(vector<vertex> &v, vector<face> &f, double &med){
         
         //set aspect ratio in each face
         f[i].aspectR = tempAR;
+            //cout << "the face: " << i  <<" : " <<tempAR<<endl; 
         
         if(finalAR < tempAR){
             finalAR = tempAR;
+            /*cout << "max edge: " << max  <<" min edge: " <<min<<endl; 
+            cout << f[i].listOfV[0]<<" "<< v[f[i].listOfV[0]].x <<" "<<v[f[i].listOfV[0]].y<<endl;
+            cout << f[i].listOfV[1]<<" " << v[f[i].listOfV[1]].x <<" "<<v[f[i].listOfV[1]].y<<endl;
+            cout << f[i].listOfV[2]<<" " << v[f[i].listOfV[2]].x <<" "<<v[f[i].listOfV[2]].y<<endl;*/
+
+
+
         }
     }//end of all faces
     

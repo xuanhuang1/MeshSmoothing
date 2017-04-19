@@ -24,6 +24,7 @@ int smoothLapAng(vector<vertex> &v,vector<face> &f);
 void smooth1(std::vector<vertex> &v, std::vector<face> &f, double ar);
 void smooth1Star(std::vector<vertex> &v, std::vector<face> &f, double ar);
 void smooth2Star(std::vector<vertex> &v, std::vector<face> &f, double ar);
+void smooth2StarQ(std::vector<vertex> &v, std::vector<face> &f, double ar);
 
 
 

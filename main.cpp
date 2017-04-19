@@ -8,6 +8,7 @@
 
 #include "functions.h"
 #include <string.h>
+#include <math.h>
 
 #define PI 3.1415926
 
@@ -44,7 +45,8 @@ int main(int argc, char* argv[]){
     cout << "max: " << maxAngle*180/PI << " min: " << minAngle*180/PI<<endl;
     cout << "aspectR: " << aspectratio<<endl;
     
-    int a =500;
+    int a =20;
+    float thresh = 2;
     while(a >0 ){
         if(!runFlag.compare("-Lap")){
             smoothLapAng(v, f);
@@ -53,7 +55,22 @@ int main(int argc, char* argv[]){
         }else if(!runFlag.compare("-SmStar1")){
             smooth1Star(v, f, aspectratio/5);
         }else if(!runFlag.compare("-SmStar2")){
-            smooth2Star(v, f, aspectratio/5);
+            for (int i = 0; i < 8; ++i){
+                if(aspectratio < 4){
+                    thresh = 1.2;
+                }else if(aspectratio < 8 ){
+                    thresh = aspectratio /4;
+                }
+                smooth2StarQ(v, f, thresh);
+            }
+        }else if(!runFlag.compare("-hb")){
+            smoothLapAng(v, f);
+            for (int i = 0; i < 10; ++i){
+
+                smooth2Star(v, f, aspectratio/5);
+            }
+
+
         }else{
             cout << "Wrong flag!" <<endl;
             return 1;

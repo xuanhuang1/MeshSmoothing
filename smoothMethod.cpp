@@ -368,7 +368,9 @@ void smooth2Star(std::vector<vertex> &v, std::vector<face> &f, double ar){
 
                 double xTobeMove = v[i].x, yTobeMove = v[i].y;
 
-                if ( max(lastEdge, nextEdge)/min(lastEdge, nextEdge) < 1.5 )
+                // 2 for fine 1.5 for good mesh
+
+                if ( max(lastEdge, nextEdge)/min(lastEdge, nextEdge) < ar )
                 {
                     //cout <<"ratoi" <<endl;
                     //cout << max(lastEdge, nextEdge)/min(lastEdge, nextEdge) <<endl;
@@ -389,6 +391,7 @@ void smooth2Star(std::vector<vertex> &v, std::vector<face> &f, double ar){
                         count --;
                         //cout << "thisEdge+0.01*max: " <<thisEdge+0.01*max << " currentDist: " << currentDist<<endl;
                     }
+                    
                 }
 
 
@@ -399,6 +402,7 @@ void smooth2Star(std::vector<vertex> &v, std::vector<face> &f, double ar){
                     xTobeMove = v[i].x;
                     yTobeMove = v[i].y;
                 }
+
 
                 xnew += xTobeMove;
                 ynew += yTobeMove;
