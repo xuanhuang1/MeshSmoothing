@@ -57,242 +57,6 @@ int smoothLapAng(vector<vertex> &v, vector<face> &f){
 }
 
 
-void smooth1(std::vector<vertex> &v, std::vector<face> &f, double ar){
-	//for each face
-	for(int k=0; k<f.size(); k++){
-	
-		double min,max,vecx,vecy;
-		double thisEdge, tempAR, minAng, thisAng;
-		int self, next, ver1, ver2;
-        double centerX, centerY;
-
-
-        //for triangle only!!!
-        centerX = GetCircumCenterX(v[f[k].listOfV[0]].x, v[f[k].listOfV[0]].y,
-        						   v[f[k].listOfV[1]].x, v[f[k].listOfV[1]].y,
-        						   v[f[k].listOfV[2]].x, v[f[k].listOfV[2]].y);
-        centerY = GetCircumCenterY(v[f[k].listOfV[0]].x, v[f[k].listOfV[0]].y,
-        						   v[f[k].listOfV[1]].x, v[f[k].listOfV[1]].y,
-        						   v[f[k].listOfV[2]].x, v[f[k].listOfV[2]].y);
-        //
-        // 
-		for(int i=0; i<f[k].listOfV.size(); i++){ 
-			self = f[k].listOfV[i];
-			next = f[k].listOfV[(i+1)%f[k].listOfV.size()];
-			int last = f[k].listOfV[(f[k].listOfV.size()+i-1)%f[k].listOfV.size()];
-
-			//cout << selfIndex <<" "<< nextIndex <<" "<<lastIndex<<endl;
-
-			vecx = v[next].x - v[self].x;	
-			vecy = v[next].y - v[self].y;	
-            double vec1x = v[last].x - v[self].x;
-            double vec1y = v[last].y - v[self].y;
-
-			thisEdge = sqrt(pow(vecx,2)+ pow(vecy,2));
-            thisAng = acos((vec1x*vecx + vec1y*vecy)
-                             /(sqrt(pow(vec1x,2)+pow(vec1y,2))
-                               *sqrt(pow(vecx,2)+pow(vecy,2)) )  );
-
-			if(i==0){
-				max = thisEdge;
-				min = thisEdge;
-                minAng = thisAng;
-				ver1 = self;
-				ver2 = next;
-			}else{
-				if(thisEdge>max){
-					max = thisEdge;
-				}
-				if(thisEdge<min){
-					min = thisEdge;
-					ver1 = self;
-					ver2 = next;
-				}
-                if(thisAng < minAng)
-                    minAng = thisAng;
-			}
-			
-		}
-	
-
-		tempAR = max/min;
-
-		if(minAng < 20*PI/180){
-                    //cout << "min " <<minAng*PI/180 <<endl;
-
-			if(v[ver1].onBound == 0){
-                //cout << ver1 << " "<<endl;
-				double angle = -0.01;
-				double currentDist = min;
-
-				while(currentDist < min+0.01*max){
-						v[ver1].x = movePX(v[ver1].x, v[ver1].y, centerX, centerY, angle);
-						v[ver1].y = movePY(v[ver1].x, v[ver1].y, centerX, centerY, angle);
-						currentDist = sqrt(pow(v[ver1].x-v[ver2].x, 2) + pow(v[ver1].y-v[ver2].y, 2));
-				}
-
-				min = currentDist;
-			}
-
-			if(v[ver2].onBound == 0){
-				double angle = 0.01;
-				double currentDist = min;
-
-				while(currentDist < min+0.01*max){
-						v[ver2].x = movePX(v[ver2].x, v[ver2].y, centerX, centerY, angle);
-						v[ver2].y = movePY(v[ver2].x, v[ver2].y, centerX, centerY, angle);
-						currentDist = sqrt(pow(v[ver1].x-v[ver2].x, 2) + pow(v[ver1].y-v[ver2].y, 2));
-
-				}
-
-                //cout << ver2 << " "<<endl;
-			}
-
-
-
-		//}else{
-        //    cout << "tar " << tempAR <<endl;
-        }
-	}
-
-}
-
-
-//  for each star region
-//  for each neighborhood face
-//  check if the center point is on the shortest edge, if true move accordingly (on circumcircle)
-//  take average
-
-void smooth1Star(std::vector<vertex> &v, std::vector<face> &f, double ar){
-    for (int i=0; i<v.size(); i++) {// for each vertex in mesh
-        double xnew = 0;
-        double ynew = 0;
-        vertex nextV(0,0,0), thisV(0,0,0);
-
-        if(v[i].onBound == 0){  
-            for(int j= 0; j<v[i].neighborSize; j++){ // for each vertex in neihgbor face
-                // get the next vertex and forms a triangle with v[i]
-                thisV = v[v[i].neighbors[j]];
-                nextV = v[v[i].neighbors[(j+1)%v[i].neighborSize]];
-
-
-                double min,max,vecx,vecy;
-                double thisEdge, tempAR, minAng, thisAng;
-                int self, next, lastIndex, ver1, ver2;
-                double centerX, centerY;
-
-
-                //for triangle only!!!
-                centerX = GetCircumCenterX(thisV.x, thisV.y,nextV.x, nextV.y,v[i].x, v[i].y);
-                centerY = GetCircumCenterY(thisV.x, thisV.y,nextV.x, nextV.y,v[i].x, v[i].y);
-
-                std::vector<int> tempInts;
-                tempInts.push_back(i);
-                tempInts.push_back(v[i].neighbors[j]);
-                tempInts.push_back(v[i].neighbors[(j+1)%v[i].neighborSize]);
-
-                // in that triangle
-                face aFaceInStar = face(tempInts);
-                for(int k=0; k<aFaceInStar.listOfV.size(); k++){ 
-                    self = aFaceInStar.listOfV[k];
-                    next = aFaceInStar.listOfV[(k+1)%aFaceInStar.listOfV.size()];
-                    int last = aFaceInStar.listOfV[(aFaceInStar.listOfV.size()+k-1)%aFaceInStar.listOfV.size()];
-                    //cout << self <<" "<< next <<" "<< endl;
-
-                    vecx = v[next].x - v[self].x;   
-                    vecy = v[next].y - v[self].y; 
-                    double vec1x = v[last].x - v[self].x;
-                    double vec1y = v[last].y - v[self].y;
-
-                    thisEdge = sqrt(pow(vecx,2)+ pow(vecy,2));
-                    thisAng = acos((vec1x*vecx + vec1y*vecy)
-                             /(sqrt(pow(vec1x,2)+pow(vec1y,2))
-                               *sqrt(pow(vecx,2)+pow(vecy,2)) )  );
-
-                    // find max and min edge
-                    if(k==0){
-                        minAng = thisAng;
-                        ver1 = self;
-                        ver2 = next;
-                    }else{
-                        if(thisEdge>max){
-                            max = thisEdge;
-                        }
-                        if(thisEdge<min){
-                            min = thisEdge;
-                            ver1 = self;
-                            ver2 = next;
-                        }
-                        if(thisAng < minAng)
-                            minAng = thisAng;
-                    }
-                }
-
-                double xTobeMove = v[i].x, yTobeMove = v[i].y;
-                tempAR = max/min;
-
-
-                if(minAng < 20*PI/180){
-
-                    //cout << "min " <<minAng*PI/180 <<endl;
-                   if(ver1 == i){
-                        //cout << ver1 << " "<<endl;
-                        double angle = -0.01;
-                        double currentDist = min;
-                        xTobeMove = v[ver1].x;
-                        yTobeMove = v[ver1].y;
-
-                        while(currentDist < min+0.01*max){
-                            xTobeMove = movePX(xTobeMove, yTobeMove, centerX, centerY, angle);
-                            yTobeMove = movePY(xTobeMove, yTobeMove, centerX, centerY, angle);
-                            currentDist = sqrt(pow(xTobeMove-v[ver2].x, 2) + pow(yTobeMove-v[ver2].y, 2));
-                        }
-
-                        min = currentDist;
-                    }
-
-                    else if(ver2 == i){
-                        double angle = 0.01;
-                        double currentDist = min;
-                        xTobeMove = v[ver2].x;
-                        yTobeMove = v[ver2].y;
-
-                        while(currentDist < min+0.01*max){
-                            xTobeMove = movePX(xTobeMove, yTobeMove, centerX, centerY, angle);
-                            yTobeMove = movePY(xTobeMove, yTobeMove, centerX, centerY, angle);
-                            currentDist = sqrt(pow(v[ver1].x-xTobeMove, 2) + pow(v[ver1].y-yTobeMove, 2));
-
-                        }
-                    //cout << ver2 << " "<<endl;
-                    }
-
-                    double ordis = findShortestDistInStar(v, f, v[i].x, v[i].y, v[i].neighbors);
-                    //cout << "v[" << i<<"] neighbors shortest dis orig: " << ordis <<endl;
-                    double dis = findShortestDistInStar(v, f, xTobeMove, yTobeMove, v[i].neighbors);
-                    //cout << "v[" << i<<"] neighbors shortest dis now: " << dis <<endl;
-                    if(dis < ordis){
-                        xTobeMove = v[i].x;
-                        yTobeMove = v[i].y;
-                        //cout << "Closer! Not Moving!" <<endl;
-                    }
-
-
-                }
-
-                xnew += xTobeMove;
-                ynew += yTobeMove;
-
-
-            }
-
-            v[i].x = xnew/v[i].neighborSize;
-            v[i].y = ynew/v[i].neighborSize;
-
-        }
-    }
-
-
-}
 
 
 //  for each star region
@@ -307,16 +71,17 @@ void smooth2Star(std::vector<vertex> &v, std::vector<face> &f, double ar){
         vertex nextV(0,0,0), thisV(0,0,0);
 
         if(v[i].onBound == 0){  
+            float weightsTotal = 0;
             for(int j= 0; j<v[i].neighborSize; j++){ // for each vertex in neihgbor face
                 // get the next vertex and forms a triangle with v[i]
                 thisV = v[v[i].neighbors[j]];
                 nextV = v[v[i].neighbors[(j+1)%v[i].neighborSize]];
 
-
                 double vecx,vecy, angle = 0.01;
                 double lastEdge, nextEdge,thisEdge, tempAR, minAng, thisAng;
-                int self, next, ver2;
+                int self, next;
                 double centerX, centerY;
+                float a;
 
 
                 //for triangle only!!!
@@ -338,8 +103,8 @@ void smooth2Star(std::vector<vertex> &v, std::vector<face> &f, double ar){
 
                     vecx = v[next].x - v[self].x;   
                     vecy = v[next].y - v[self].y; 
-                    double vec1x = v[last].x - v[self].x;
-                    double vec1y = v[last].y - v[self].y;
+                    double vec1x = -v[last].x + v[self].x;
+                    double vec1y = -v[last].y + v[self].y;
 
                     thisEdge = sqrt(pow(vecx,2)+ pow(vecy,2));
                     thisAng = acos((vec1x*vecx + vec1y*vecy)
@@ -348,70 +113,74 @@ void smooth2Star(std::vector<vertex> &v, std::vector<face> &f, double ar){
 
                     // find max and min edge
                     if(k==0){
-                        minAng = thisAng;
+                        //minAng = thisAng;
                         lastEdge = sqrt(pow(vecx,2)+ pow(vecy,2));
                         nextEdge = sqrt(pow(vec1x,2)+ pow(vec1y,2));
 
                         if(lastEdge < nextEdge){
-                            angle = -0.01;
-                            ver2 = last;
+                            angle = -0.02;
                         }else{
-                            angle = 0.01;
-                            ver2 = next;
+                            angle = 0.02; 
                         }
 
                     }else{
-                        if(thisAng < minAng)
-                            minAng = thisAng;
+                        //if(thisAng < minAng)
+                            //minAng = thisAng;
                     }
                 }
 
                 double xTobeMove = v[i].x, yTobeMove = v[i].y;
 
                 // 2 for fine 1.5 for good mesh
-
-                if ( max(lastEdge, nextEdge)/min(lastEdge, nextEdge) < ar )
-                {
+                a = max(lastEdge, nextEdge)/min(lastEdge, nextEdge);
+                weightsTotal+=a;
+                //if (  max(lastEdge, nextEdge)/min(lastEdge, nextEdge)< ar )
+                //{
                     //cout <<"ratoi" <<endl;
                     //cout << max(lastEdge, nextEdge)/min(lastEdge, nextEdge) <<endl;
-                }else{
+                //}else{
 
-
-                //cout << max << " "<< min <<endl;
-
-                //if(minAng < 30*PI/180){
-
-                    //cout << "min " <<minAng*PI/180 <<endl;
-                    //cout << minAng << " "<<endl;
-                    double count = 3;
-
-                    while(count > 0){
-                        xTobeMove = movePX(xTobeMove, yTobeMove, centerX, centerY, angle);
-                        yTobeMove = movePY(xTobeMove, yTobeMove, centerX, centerY, angle);
-                        count --;
-                        //cout << "thisEdge+0.01*max: " <<thisEdge+0.01*max << " currentDist: " << currentDist<<endl;
-                    }
+                       //double rcoeff = 1;
+                        //cout << "  " << i << " " <<thisAng*180/PI  <<" pi " <<PI<<endl;
+                        if(thisAng > PI/3){
+                            //cout << "larger "<< v[i].x <<" " <<v[i].y<<" "<<endl;
+                            //rcoeff = 0.00003*thisAng/(PI/3) + 1;
+                            //cout << "larger "<< v[i].x <<" " <<v[i].y<<" "<<endl;
+                            //rcoeff = thisAng/(PI/2);
+                            xTobeMove = centerX + 1.00000002*(xTobeMove - centerX);
+                            yTobeMove = centerY + 1.00000002*(yTobeMove - centerY);
+                        }else if(thisAng < PI/3){
+                            //printf("a");
+                            //rcoeff = 0.99998;
+                            xTobeMove = centerX + 0.99999998*(xTobeMove - centerX);
+                            yTobeMove = centerY + 0.99999998*(yTobeMove - centerY);
+                        }
+                        xTobeMove = movePX(xTobeMove, yTobeMove, centerX, centerY, angle, 1);
+                        yTobeMove = movePY(xTobeMove, yTobeMove, centerX, centerY, angle, 1);
+                        
                     
-                }
+                //}
 
 
                 //}
-                double ordis = findShortestDistInStar(v, f, v[i].x, v[i].y, v[i].neighbors);
-                double dis = findShortestDistInStar(v, f, xTobeMove, yTobeMove, v[i].neighbors);
+                double total, t2;
+                double  disToOppoEdge = lineDistPoint(thisV.x, thisV.y,nextV.x, nextV.y,v[i].x, v[i].y);
+                double ordis = findShortestDistInStar(v, f, v[i].x, v[i].y, v[i].neighbors, total);
+                double dis = findShortestDistInStar(v, f, xTobeMove, yTobeMove, v[i].neighbors, t2);
                 if(dis < ordis){
                     xTobeMove = v[i].x;
                     yTobeMove = v[i].y;
                 }
+                //cout <<"    disFrac"<< disToOppoEdge/total <<endl;
 
-
-                xnew += xTobeMove;
-                ynew += yTobeMove;
+                xnew += a*xTobeMove;
+                ynew += a*yTobeMove;
 
 
             }
 
-            v[i].x = xnew/v[i].neighborSize;
-            v[i].y = ynew/v[i].neighborSize;
+            v[i].x = xnew/weightsTotal;
+            v[i].y = ynew/weightsTotal;
 
         }
     }
@@ -462,12 +231,12 @@ double GetCircumCenterY(double Ax, double Ay, double Bx, double By, double Cx, d
      
 }
  
-double movePX(double Ax, double Ay, double cenX, double cenY, double ang){
-    return cenX + (Ax - cenX)*cos(ang) - (Ay - cenY)*sin(ang);
+double movePX(double Ax, double Ay, double cenX, double cenY, double ang, double rScalar){
+    return cenX + rScalar*(Ax - cenX)*cos(ang) - rScalar*(Ay - cenY)*sin(ang);
 }
  
-double movePY(double Ax, double Ay, double cenX, double cenY, double ang){
-    return cenY + (Ax - cenX)*sin(ang) + (Ay - cenY)*cos(ang);
+double movePY(double Ax, double Ay, double cenX, double cenY, double ang, double rScalar){
+    return cenY + rScalar*(Ax - cenX)*sin(ang) + rScalar*(Ay - cenY)*cos(ang);
 }
 
 

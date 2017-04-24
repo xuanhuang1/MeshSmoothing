@@ -293,8 +293,9 @@ double lineDistPoint(double x1, double y1, double x2, double y2,double px, doubl
 
 }
 
-double findShortestDistInStar(vector<vertex> &v, vector<face> &f, double theX, double theY, std::vector<int> nbrs){
+double findShortestDistInStar(vector<vertex> &v, vector<face> &f, double theX, double theY, std::vector<int> nbrs, double &total){
     double distFinal, distTemp = 0;
+    total = 0;
     for (int i = 0; i < nbrs.size(); ++i)
     {
         vertex a = v[nbrs[(i)%nbrs.size()]];
@@ -306,6 +307,7 @@ double findShortestDistInStar(vector<vertex> &v, vector<face> &f, double theX, d
             distFinal = distTemp;
         if(distFinal > distTemp)
             distFinal = distTemp;
+        total += distTemp;
     }
 
     return distFinal;

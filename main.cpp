@@ -16,7 +16,7 @@ using namespace std;
 
 int main(int argc, char* argv[]){
     if(argc != 4){
-        cout << "Usage: ./test [flag: -Lap -Sm -SmStar1 -SmStar2] inputOff outputOff" <<endl;
+        cout << "Usage: ./test [flag: -Lap -s -q] inputOff outputOff" <<endl;
         return 1; 
     }
 
@@ -50,11 +50,16 @@ int main(int argc, char* argv[]){
     while(a >0 ){
         if(!runFlag.compare("-Lap")){
             smoothLapAng(v, f);
-        }else if(!runFlag.compare("-Sm")){
-            smooth1(v, f, aspectratio/5);
-        }else if(!runFlag.compare("-SmStar1")){
-            smooth1Star(v, f, aspectratio/5);
-        }else if(!runFlag.compare("-SmStar2")){
+        }else if(!runFlag.compare("-s")){
+            for (int i = 0; i < 8; ++i){
+                if(aspectratio < 4){
+                    thresh = 1.2;
+                }else if(aspectratio < 8 ){
+                    thresh = aspectratio /4;
+                }
+                smooth2Star(v, f, thresh);
+            }
+        }else if(!runFlag.compare("-q")){
             for (int i = 0; i < 8; ++i){
                 if(aspectratio < 4){
                     thresh = 1.2;
@@ -62,12 +67,6 @@ int main(int argc, char* argv[]){
                     thresh = aspectratio /4;
                 }
                 smooth2StarQ(v, f, thresh);
-            }
-        }else if(!runFlag.compare("-hb")){
-            smoothLapAng(v, f);
-            for (int i = 0; i < 10; ++i){
-
-                smooth2Star(v, f, aspectratio/5);
             }
 
 
